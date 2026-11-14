@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slugsy's Django School: One Template, Many URLs</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="logo">🐌</span><div><b>Slugsy's Django School</b><small>One template, many URLs</small></div></div>
+    <div class="progress"><div class="bar"><i id="pbar"></i></div><small id="ptext">0 of 15 done</small></div>
+    <nav id="nav"></nav>
+    <button class="btn ghost small" id="reset" type="button">Reset progress</button>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn" id="menu" type="button" aria-label="Menu">☰</button>
+      <span id="crumb"></span>
+      <button class="icon-btn" id="theme" type="button" aria-label="Toggle dark mode">🌙</button>
+    </header>
+
+    <div id="lessons">
+
+<!-- ============ 0 WELCOME ============ -->
+<section class="lesson" hidden data-title="Welcome" data-emoji="👋" data-min="2">
+  <div class="hero">
+    <div class="hero-snail">🐌</div>
+    <div>
+      <h1>Hi! I'm Slugsy. Let's make pages multiply.</h1>
+      <p class="lead">By the end you'll know how an online shop shows <b>thousands of products</b> using <b>one page design</b>, each product with its <b>own URL</b>. And you'll have built it yourself in <b>Django</b>.</p>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card"><h3>🧠 No experience needed</h3><p>Every new word is explained the moment it shows up.</p></div>
+    <div class="card"><h3>🎮 Hands-on</h3><p>Every lesson has something to click, type, or deliberately break.</p></div>
+    <div class="card"><h3>✅ Saved progress</h3><p>Quick checks lock things in. Your progress is remembered in this browser.</p></div>
+  </div>
+
+  <h2>What you'll build</h2>
+  <div class="mock">
+    <div class="mock-bar"><i></i><i></i><i></i><span>myshop.com/products/red-running-shoes/</span></div>
+    <div class="mock-body">
+      <div class="urls">
+        <div>/products/<b>red-running-shoes</b>/</div>
+        <div>/products/<b>blue-denim-hat</b>/</div>
+        <div>/products/<b>wireless-headphones</b>/</div>
+        <div>/products/<b>…thousands more</b>/</div>
+      </div>
+      <div class="arrow">➜</div>
+      <div class="one-file">📄 <b>product_detail.html</b><small>the only page file you write</small></div>
+    </div>
+  </div>
+
+  <h2>Before you start</h2>
+  <ul class="ticks">
+    <li>Python 3 installed (you'll check in lesson 5)</li>
+    <li>A code editor (VS Code is great)</li>
+    <li>That's it. If you can read a little Python, you're ready.</li>
+  </ul>
+
+  <div class="slugsy"><span class="face">🐌</span><div class="bubble">Tip: use the sidebar to jump around, or press <b>Done, next →</b> at the bottom of each lesson. Take your time. Slugs are slow and still get there. 🐌</div></div>
+</section>
+
+<!-- ============ 1 PROBLEM ============ -->
+<section class="lesson" hidden data-title="The problem" data-emoji="🤯" data-min="3">
+  <h1>The problem: a page for every product?</h1>
+  <p class="lead">Imagine you open an online shop. You sell shoes, hats, headphones… Each product needs its own page, so customers can share a link like <code>/products/blue-denim-hat/</code>.</p>
+  <p>The beginner approach: write one HTML file per product. It works! Until it doesn't. Drag the slider and feel the pain.</p>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Try it: how many products do you sell?</div>
+    <label class="range"><input type="range" id="w1-range" min="1" max="500" value="40"> <b><span id="w1-n">40</span> products</b></label>
+    <div class="compare">
+      <div class="side bad">
+        <h4>😩 One HTML file per product</h4>
+        <div class="files" id="w1-grid"></div>
+        <p><b id="w1-files"></b> files to write</p>
+        <p>Change the footer text → <b id="w1-edits"></b> edits ≈ <b id="w1-time"></b></p>
+      </div>
+      <div class="side good">
+        <h4>😎 One template</h4>
+        <div class="files"><span class="file big">📄</span></div>
+        <p><b>1</b> file to write</p>
+        <p>Change the footer text → <b>1</b> edit ≈ <b>30 sec</b></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn"><b>Other problems with 1 file per product:</b> typos spread everywhere, prices are stuck inside HTML, and your shop manager can't add a product without a developer.</div>
+
+  <p>Real shops solve this with a simple idea. That's next. 👉</p>
+
+  <div class="qcheck" data-answer="c" data-why="Right: the real cost is repetition. Every change has to be copied into every file.">
+    <h4>🧩 Quick check</h4>
+    <p>What's the main problem with one HTML file per product?</p>
+    <button data-k="a">Browsers can't open that many files</button>
+    <button data-k="b">HTML doesn't allow it</button>
+    <button data-k="c">Every change must be repeated in every file</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 2 BIG IDEA ============ -->
+<section class="lesson" hidden data-title="The big idea" data-emoji="💡" data-min="4">
+  <h1>The big idea: a form letter with blanks</h1>
+  <p class="lead">Think of a <b>form letter</b>: "Dear ______, your order of ______ has shipped." The letter is written <b>once</b>. For each customer, you fill in the blanks.</p>
+  <p>Web pages can work the same way:</p>
+
+  <div class="grid3 recipe">
+    <div class="card"><div class="big">📝</div><h3>Template</h3><p>The page design with <b>blanks</b>, like <code>{{ name }}</code>. Written once.</p></div>
+    <div class="card"><div class="big">📦</div><h3>Data</h3><p>The real info for each product: name, price, description. Lives in a <b>database</b>.</p></div>
+    <div class="card"><div class="big">🔗</div><h3>URL</h3><p>Tells the server <b>which product</b> to fetch so it knows what to fill in.</p></div>
+  </div>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Pick a product and watch the blanks fill in</div>
+    <div class="chips" id="w2-picker"></div>
+    <div class="three">
+      <div class="panel">
+        <h4>📝 Template (written once)</h4>
+        <div class="tplbox">
+          <div>&lt;h1&gt;<span class="blank">{{ name }}</span>&lt;/h1&gt;</div>
+          <div>&lt;p&gt;$<span class="blank">{{ price }}</span>&lt;/p&gt;</div>
+          <div>&lt;p&gt;<span class="blank">{{ description }}</span>&lt;/p&gt;</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h4>📦 Data (from database)</h4>
+        <div id="w2-data"></div>
+      </div>
+      <div class="panel">
+        <h4>✨ Finished page</h4>
+        <div id="w2-out" class="product-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>The recipe, in one line</h3>
+  <div class="callout"><b>URL</b> says which product → grab its <b>data</b> → pour it into the <b>template</b> → send the finished page to the visitor.</div>
+  <p>One template, any number of products, a different URL for each. That's all "dynamic pages" means.</p>
+
+  <div class="qcheck" data-answer="b" data-why="Exactly. The template has blanks, and the data fills them for each product.">
+    <h4>🧩 Quick check</h4>
+    <p>In the form-letter idea, what are the "blanks"?</p>
+    <button data-k="a">The URLs</button>
+    <button data-k="b">The spots in the template that get filled with product data</button>
+    <button data-k="c">The database</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 3 URL ANATOMY ============ -->
+<section class="lesson" hidden data-title="Anatomy of a URL" data-emoji="🔗" data-min="4">
+  <h1>Anatomy of a URL (and what's a "slug"?)</h1>
+  <p class="lead">A URL is a web address. For our shop, the <b>last piece</b> is special: it changes for each product. That piece is called a <b>slug</b>.</p>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Type or edit a URL. See it split into parts</div>
+    <input class="input mono" id="w3-url" value="https://myshop.com/products/red-running-shoes/" spellcheck="false">
+    <div class="parts" id="w3-parts"></div>
+  </div>
+
+  <h3>So what is a slug?</h3>
+  <p>A <b>slug</b> is the human-friendly name of a page, written in lowercase letters, numbers and hyphens. No spaces, no weird symbols. Type a product name below and see how it turns into a slug.</p>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Slug maker</div>
+    <input class="input" id="w3-name" value="Red Running Shoes (Size 42)!" spellcheck="false">
+    <div class="slug-out">➜ <code id="w3-slug"></code></div>
+    <ul class="ticks small">
+      <li>Lowercase everything</li>
+      <li>Replace spaces with <code>-</code></li>
+      <li>Remove symbols like <code>( ) ! &amp; ?</code></li>
+    </ul>
+  </div>
+
+  <div class="slugsy"><span class="face">🐌</span><div class="bubble">Why "slug"? It's newspaper slang for a short label on a story. (Also, I like it.) Django even has a built-in <code>SlugField</code> and <code>slugify()</code>.</div></div>
+
+  <div class="qcheck" data-answer="a" data-why="Yes. In /products/blue-denim-hat/ the slug is blue-denim-hat.">
+    <h4>🧩 Quick check</h4>
+    <p>In <code>/products/blue-denim-hat/</code>, which part is the slug?</p>
+    <button data-k="a">blue-denim-hat</button>
+    <button data-k="b">products</button>
+    <button data-k="c">the trailing slash</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 4 THREE HELPERS ============ -->
+<section class="lesson" hidden data-title="Django's 3 helpers" data-emoji="🚦" data-min="5">
+  <h1>Django's 3 helpers: URL → View → Template</h1>
+  <p class="lead">Think of a restaurant. 🍽️ You say what you want, a waiter sends the order to the right chef, the chef grabs ingredients and plates the food.</p>
+
+  <table class="table">
+    <tr><th>Restaurant</th><th>Django</th><th>File</th><th>Job</th></tr>
+    <tr><td>🚪 Host / waiter</td><td><b>URL router</b></td><td><code>urls.py</code></td><td>Reads the address, picks who handles it</td></tr>
+    <tr><td>🧑‍🍳 Chef</td><td><b>View</b></td><td><code>views.py</code></td><td>Does the thinking: fetches data</td></tr>
+    <tr><td>🥫 Pantry</td><td><b>Model / DB</b></td><td><code>models.py</code></td><td>Stores all the product data</td></tr>
+    <tr><td>🍽️ Plate</td><td><b>Template</b></td><td><code>.html</code> file</td><td>Presents the result nicely</td></tr>
+  </table>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Follow one request, step by step</div>
+    <div class="chips" id="w4-picker"></div>
+    <div class="flow" id="w4-flow"></div>
+    <div class="step-desc" id="w4-desc"></div>
+    <div class="controls">
+      <button class="btn ghost" id="w4-back" type="button">◀ Back</button>
+      <span id="w4-count" class="muted"></span>
+      <button class="btn" id="w4-next" type="button">Next ▶</button>
+      <button class="btn ghost" id="w4-restart" type="button">↺ Restart</button>
+    </div>
+  </div>
+
+  <div class="callout"><b>Remember this order.</b> You'll write these four things in the same spirit: <b>model</b> (data), <b>URL</b>, <b>view</b>, <b>template</b>. We'll do each in its own lesson.</div>
+
+  <div class="qcheck" data-answer="b" data-why="Right: urls.py is the router. The view does the work and the template shows it.">
+    <h4>🧩 Quick check</h4>
+    <p>Which file decides <i>which view</i> handles a given address?</p>
+    <button data-k="a">views.py</button>
+    <button data-k="b">urls.py</button>
+    <button data-k="c">models.py</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 5 SETUP ============ -->
+<section class="lesson" hidden data-title="Set up Django" data-emoji="🛠️" data-min="6">
+  <h1>Set up your Django project</h1>
+  <p class="lead">Let's get a fresh project running. Open a terminal and follow along. Tick each box as you go.</p>
+
+  <div class="widget">
+    <div class="wtitle">✅ Your setup checklist <span class="muted" id="w5-prog"></span></div>
+
+    <label class="todo"><input type="checkbox" data-key="s1"> <div><b>1. Check Python</b>
+      <div class="tabset"><div class="tab-bar"><button class="tab-btn" type="button">Mac / Linux</button><button class="tab-btn" type="button">Windows</button></div>
+        <div class="tab-panel"><pre class="code" data-lang="bash" data-file="terminal">
+python3 --version
+</pre></div>
+        <div class="tab-panel"><pre class="code" data-lang="bash" data-file="terminal">
+python --version
+</pre></div>
+      </div>
+      <small>You should see Python 3.10 or higher.</small></div></label>
+
+    <label class="todo"><input type="checkbox" data-key="s2"> <div><b>2. Make a folder and a virtual environment</b>
+      <small>A virtual environment is a private box for this project's packages, so projects don't mess with each other.</small>
+      <div class="tabset"><div class="tab-bar"><button class="tab-btn" type="button">Mac / Linux</button><button class="tab-btn" type="button">Windows</button></div>
+        <div class="tab-panel"><pre class="code" data-lang="bash" data-file="terminal">
+mkdir myshop &amp;&amp; cd myshop
+python3 -m venv venv
+source venv/bin/activate
+</pre></div>
+        <div class="tab-panel"><pre class="code" data-lang="bash" data-file="terminal">
+mkdir myshop
+cd myshop
+python -m venv venv
+venv\Scripts\activate
+</pre></div>
+      </div>
+      <small>Your prompt should now start with <code>(venv)</code>.</small></div></label>
+
+    <label class="todo"><input type="checkbox" data-key="s3"> <div><b>3. Install Django</b>
+      <pre class="code" data-lang="bash" data-file="terminal">
+pip install django
+</pre></div></label>
+
+    <label class="todo"><input type="checkbox" data-key="s4"> <div><b>4. Create the project and an app</b>
+      <small>The <b>project</b> is the whole website. An <b>app</b> is one feature inside it. Ours is <code>products</code>.</small>
+      <pre class="code" data-lang="bash" data-file="terminal">
+django-admin startproject shop .
+python manage.py startapp products
+</pre></div></label>
+
+    <label class="todo"><input type="checkbox" data-key="s5"> <div><b>5. Tell Django about your app</b>
+      <small>Open <code>shop/settings.py</code> and add <code>"products"</code> to <code>INSTALLED_APPS</code>:</small>
+      <pre class="code" data-lang="python" data-file="shop/settings.py">
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "products",  # &lt;-- add this line
+]
+</pre></div></label>
+
+    <label class="todo"><input type="checkbox" data-key="s6"> <div><b>6. Start the server</b>
+      <pre class="code" data-lang="bash" data-file="terminal">
+python manage.py runserver
+</pre>
+      <small>Open <code>http://127.0.0.1:8000/</code>. You should see Django's rocket 🚀 page.</small></div></label>
+  </div>
+
+  <h3>Your folder should look like this</h3>
+  <pre class="tree">myshop/
+├── manage.py
+├── shop/              ← the project
+│   ├── settings.py
+│   └── urls.py
+└── products/          ← our app
+    ├── models.py
+    ├── views.py
+    └── (we'll add urls.py and templates/ soon)</pre>
+
+  <div class="slugsy"><span class="face">🐌</span><div class="bubble"><b>Stuck?</b> "python not found" → try <code>python3</code>. "No module named django" → your venv isn't active; run the activate command again.</div></div>
+</section>
+
+<!-- ============ 6 MODEL ============ -->
+<section class="lesson" hidden data-title="Model: your data" data-emoji="🗃️" data-min="7">
+  <h1>The model: where products live</h1>
+  <p class="lead">A <b>model</b> is a Python class that describes one kind of thing you store. Django turns it into a <b>database table</b>. One class = one table. Each product = one row.</p>
+
+  <pre class="code" data-lang="python" data-file="products/models.py">
+from django.db import models
+from django.urls import reverse
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    description = models.TextField(blank=True)
+    in_stock = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("product_detail", args=[self.slug])
+</pre>
+
+  <h3>Line by line</h3>
+  <table class="table">
+    <tr><td><code>CharField</code></td><td>Short text (a name). <code>max_length</code> is required.</td></tr>
+    <tr><td><code>SlugField(unique=True)</code></td><td>The URL piece. <b>unique</b> = no two products may share a slug, or their URLs would clash.</td></tr>
+    <tr><td><code>DecimalField</code></td><td>Money. Use this, not floats, to avoid rounding bugs.</td></tr>
+    <tr><td><code>TextField</code></td><td>Long text. <code>blank=True</code> = may be left empty.</td></tr>
+    <tr><td><code>BooleanField</code></td><td>Yes/no. Here: in stock?</td></tr>
+    <tr><td><code>__str__</code></td><td>How a product is displayed in the admin and the shell.</td></tr>
+    <tr><td><code>get_absolute_url</code></td><td>A handy "what's my URL?" method. We'll use it in lesson 11.</td></tr>
+  </table>
+
+  <h3>Create the table</h3>
+  <p>Models are just Python until you tell Django to build the table. Two commands:</p>
+  <pre class="code" data-lang="bash" data-file="terminal">
+python manage.py makemigrations
+python manage.py migrate
+</pre>
+  <p><code>makemigrations</code> writes the plan. <code>migrate</code> carries it out.</p>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Be the database: add products and watch the table grow</div>
+    <div class="form-row">
+      <input class="input" id="w6-name" placeholder="Name e.g. Blue Denim Hat" value="Green Scarf" spellcheck="false">
+      <input class="input" id="w6-slug" placeholder="slug" spellcheck="false">
+      <input class="input narrow" id="w6-price" placeholder="Price" value="12.00">
+    </div>
+    <input class="input" id="w6-desc" placeholder="Description" value="Warm, soft and a little bit fancy.">
+    <div class="controls"><button class="btn" id="w6-add" type="button">➕ Add product</button><span id="w6-msg" class="msg"></span></div>
+    <div class="tablewrap"><table class="table dbt" id="w6-table"></table></div>
+    <div id="w6-code"></div>
+    <small class="muted">Try adding a product whose slug already exists (for example <code>coffee-mug</code>) and see what the database says.</small>
+  </div>
+
+  <h3>Add products the easy way: the admin</h3>
+  <p>Django ships with a free admin panel. Register your model:</p>
+  <pre class="code" data-lang="python" data-file="products/admin.py">
+from django.contrib import admin
+from .models import Product
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("name", "price", "in_stock")
+    prepopulated_fields = {"slug": ("name",)}  # slug fills itself from the name
+</pre>
+  <pre class="code" data-lang="bash" data-file="terminal">
+python manage.py createsuperuser
+python manage.py runserver
+</pre>
+  <p>Go to <code>http://127.0.0.1:8000/admin/</code>, log in, and add 3 or 4 products. Add <b>at least</b> <code>red-running-shoes</code> so the next lessons work.</p>
+
+  <div class="qcheck" data-answer="c" data-why="Yes. unique=True stops two products sharing a URL, which would make the page ambiguous.">
+    <h4>🧩 Quick check</h4>
+    <p>Why is the slug field <code>unique=True</code>?</p>
+    <button data-k="a">To make it faster to type</button>
+    <button data-k="b">Django requires it</button>
+    <button data-k="c">Two products with the same slug would have the same URL</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 7 URLS ============ -->
+<section class="lesson" hidden data-title="urls.py: the router" data-emoji="🗺️" data-min="6">
+  <h1>urls.py: teach Django your addresses</h1>
+  <p class="lead">Now the magic ingredient. We tell Django: <i>"when the address looks like <code>/products/SOMETHING/</code>, run the <code>product_detail</code> view and hand it SOMETHING."</i></p>
+
+  <h3>Step 1: the app's own urls.py</h3>
+  <p>Create a <b>new file</b> <code>products/urls.py</code>:</p>
+  <pre class="code" data-lang="python" data-file="products/urls.py">
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.product_list, name="product_list"),
+    path("&lt;slug:slug&gt;/", views.product_detail, name="product_detail"),
+]
+</pre>
+
+  <h3>Step 2: plug it into the project's urls.py</h3>
+  <pre class="code" data-lang="python" data-file="shop/urls.py">
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("products/", include("products.urls")),
+]
+</pre>
+  <p><code>include()</code> means: "anything starting with <code>products/</code>, let <code>products/urls.py</code> handle the rest."</p>
+
+  <h3>The star: <code>&lt;slug:slug&gt;</code></h3>
+  <p>Angle brackets are a <b>capture</b>. Read it as <code>&lt;converter:variable_name&gt;</code>:</p>
+  <ul class="ticks small">
+    <li><b>converter</b> (<code>slug</code>): what shape is allowed (letters, numbers, hyphens)</li>
+    <li><b>variable_name</b> (<code>slug</code>): the name the view receives it under</li>
+  </ul>
+
+  <div class="widget">
+    <div class="wtitle">🎮 URL matcher: test addresses against your patterns</div>
+    <div class="form-row">
+      <label class="muted">Detail pattern uses
+        <select class="input narrow" id="w7-pattern">
+          <option value="slug">&lt;slug:slug&gt;</option>
+          <option value="int">&lt;int:id&gt;</option>
+          <option value="str">&lt;str:name&gt;</option>
+        </select>
+      </label>
+    </div>
+    <div id="w7-code"></div>
+    <input class="input mono" id="w7-path" value="/products/red-running-shoes/" spellcheck="false">
+    <div class="chips" id="w7-quick"></div>
+    <div class="result" id="w7-res"></div>
+  </div>
+
+  <div class="callout"><b>Order matters.</b> Django checks patterns top to bottom and uses the <b>first</b> match. Put specific patterns before general ones.</div>
+
+  <div class="qcheck" data-answer="b" data-why="Yes. Django grabs that part of the URL and passes it into your view as the slug argument.">
+    <h4>🧩 Quick check</h4>
+    <p>What does <code>&lt;slug:slug&gt;</code> do?</p>
+    <button data-k="a">Creates a new slug in the database</button>
+    <button data-k="b">Captures that part of the URL and passes it to the view as <code>slug</code></button>
+    <button data-k="c">Converts the page to a slug</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 8 VIEWS ============ -->
+<section class="lesson" hidden data-title="views.py: the brain" data-emoji="🧠" data-min="6">
+  <h1>views.py: the brain</h1>
+  <p class="lead">A <b>view</b> is just a Python function. It receives the visitor's request (and the captured slug), fetches data, and returns a page.</p>
+
+  <pre class="code" data-lang="python" data-file="products/views.py">
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, "products/product_list.html", {"products": products})
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    return render(request, "products/product_detail.html", {"product": product})
+</pre>
+
+  <h3>Walk through <code>product_detail</code></h3>
+  <ol class="steps">
+    <li><code>def product_detail(request, slug)</code>: Django passes <code>request</code> (info about the visitor) and <code>slug</code> (captured from the URL, same name!).</li>
+    <li><code>get_object_or_404(Product, slug=slug)</code>: "find the product whose slug equals this. If none exists, show a 404 page."</li>
+    <li><code>render(request, "…html", {"product": product})</code>: pours the product into the template. The dictionary is the <b>context</b>: names the template can use.</li>
+  </ol>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Run the view: what happens for each slug?</div>
+    <div class="radios">
+      <label><input type="radio" name="w8-mode" value="safe" checked> <code>get_object_or_404</code> (recommended)</label>
+      <label><input type="radio" name="w8-mode" value="raw"> plain <code>Product.objects.get</code></label>
+    </div>
+    <div class="form-row">
+      <input class="input mono" id="w8-slug" value="red-running-shoes" spellcheck="false">
+      <button class="btn" id="w8-run" type="button">▶ Run view</button>
+    </div>
+    <div class="chips" id="w8-quick"></div>
+    <div class="tablewrap"><table class="table dbt" id="w8-table"></table></div>
+    <div class="result" id="w8-res"></div>
+  </div>
+
+  <div class="callout good"><b>Why not just <code>.get()</code>?</b> If the slug doesn't exist, <code>.get()</code> crashes (server error 500). Visitors typo URLs constantly. <code>get_object_or_404</code> gives them a polite "page not found" instead.</div>
+
+  <div class="qcheck" data-answer="a" data-why="Yes. It returns the product if found, otherwise a proper 404 response.">
+    <h4>🧩 Quick check</h4>
+    <p>What does <code>get_object_or_404</code> do when no product matches?</p>
+    <button data-k="a">Shows a "page not found" (404) instead of crashing</button>
+    <button data-k="b">Creates the product</button>
+    <button data-k="c">Returns an empty page with status 200</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 9 TEMPLATES ============ -->
+<section class="lesson" hidden data-title="Templates: the blanks" data-emoji="🎨" data-min="8">
+  <h1>Templates: fill-in-the-blank HTML</h1>
+  <p class="lead">A template is normal HTML plus a few special Django tags. Two kinds matter today:</p>
+  <div class="grid2">
+    <div class="card"><h3><code>{{ … }}</code></h3><p><b>Print a value.</b> <code>{{ product.name }}</code> shows the product's name.</p></div>
+    <div class="card"><h3><code>{% … %}</code></h3><p><b>Do logic.</b> <code>{% if %}</code>, <code>{% for %}</code>, <code>{% url %}</code>…</p></div>
+  </div>
+
+  <h3>Where to save it</h3>
+  <p>Django looks for templates inside <code>templates/</code> in your app. Repeat the app name once more inside (a Django habit that avoids name clashes):</p>
+  <pre class="tree">products/
+└── templates/
+    └── products/
+        ├── product_detail.html   ← this lesson
+        └── product_list.html     ← lesson 11</pre>
+
+  <pre class="code" data-lang="html" data-file="products/templates/products/product_detail.html">
+&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;{{ product.name }} | My Shop&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;{{ product.name }}&lt;/h1&gt;
+  &lt;p&gt;${{ product.price }}&lt;/p&gt;
+  &lt;p&gt;{{ product.description }}&lt;/p&gt;
+
+  {% if product.in_stock %}
+    &lt;button&gt;Add to cart&lt;/button&gt;
+  {% else %}
+    &lt;p&gt;Sorry, sold out.&lt;/p&gt;
+  {% endif %}
+
+  &lt;a href="{% url 'product_list' %}"&gt;← All products&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Live template lab: edit the template, see the page</div>
+    <div class="chips" id="w9-picker"></div>
+    <div class="two">
+      <div>
+        <h4>📝 Template (editable)</h4>
+        <textarea class="input mono area" id="w9-tpl" spellcheck="false" rows="11"></textarea>
+        <div class="controls"><button class="btn ghost small" id="w9-reset" type="button">↺ Reset template</button></div>
+      </div>
+      <div>
+        <h4>✨ Rendered page</h4>
+        <div class="render" id="w9-out"></div>
+        <div class="msg warnmsg" id="w9-warn"></div>
+      </div>
+    </div>
+    <div class="challenges">
+      <b>Challenges</b>
+      <label class="todo mini"><input type="checkbox" id="w9-ch1" disabled> Make the name UPPERCASE with <code>{{ product.name|upper }}</code></label>
+      <label class="todo mini"><input type="checkbox" id="w9-ch2" disabled> Use <code>{% if product.in_stock %}</code> … <code>{% else %}</code> … <code>{% endif %}</code></label>
+      <label class="todo mini"><input type="checkbox" id="w9-ch3" disabled> Mistype a variable (like <code>{{ product.colour }}</code>) and see it vanish</label>
+    </div>
+  </div>
+
+  <div class="callout"><b>Filters:</b> the <code>|</code> after a variable changes it. Try <code>|upper</code>, <code>|lower</code>, <code>|title</code>, <code>|length</code>.</div>
+
+  <div class="qcheck" data-answer="b" data-why="Yes. Double braces print a value. Percent tags do logic.">
+    <h4>🧩 Quick check</h4>
+    <p>Which prints the product's price on the page?</p>
+    <button data-k="a"><code>{% product.price %}</code></button>
+    <button data-k="b"><code>{{ product.price }}</code></button>
+    <button data-k="c"><code>[[ product.price ]]</code></button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 10 TOGETHER ============ -->
+<section class="lesson" hidden data-title="Put it together" data-emoji="🚀" data-min="6">
+  <h1>Put it all together 🚀</h1>
+  <p class="lead">Time to see the whole trick. Below is a tiny pretend browser wired to a pretend Django. Click around, type URLs, and watch the "server log".</p>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Mini shop: one template, many URLs</div>
+    <div class="browser">
+      <div class="b-bar">
+        <button class="icon-btn" id="b-back" type="button" aria-label="Back">◀</button>
+        <button class="icon-btn" id="b-fwd" type="button" aria-label="Forward">▶</button>
+        <span class="b-host">myshop.com</span>
+        <input id="b-url" class="b-input" spellcheck="false" value="/products/">
+        <button class="btn small" id="b-go" type="button">Go</button>
+      </div>
+      <div class="b-view" id="b-view"></div>
+    </div>
+    <div class="chips" id="b-links"></div>
+    <div class="log" id="b-log"></div>
+    <div class="stat" id="b-stat"></div>
+  </div>
+
+  <h3>Now do it for real</h3>
+  <ol class="steps">
+    <li>Make sure the product with slug <code>red-running-shoes</code> exists (add it in the admin).</li>
+    <li>Run <code>python manage.py runserver</code>.</li>
+    <li>Visit <code>http://127.0.0.1:8000/products/red-running-shoes/</code>.</li>
+    <li>Add another product and visit its slug. <b>You didn't write any new code.</b></li>
+    <li>Visit <code>/products/nope/</code> and enjoy your 404 page.</li>
+  </ol>
+
+  <div class="slugsy"><span class="face">🐌</span><div class="bubble">That's the whole trick. Product number 5,000 costs you <b>zero</b> new files. Just a new row in the database.</div></div>
+</section>
+
+<!-- ============ 11 LIST PAGE ============ -->
+<section class="lesson" hidden data-title="The product list page" data-emoji="📋" data-min="6">
+  <h1>Bonus: the product list page</h1>
+  <p class="lead">Visitors need a page that shows <b>all</b> products and links to each one. Same idea, with a loop.</p>
+
+  <pre class="code" data-lang="html" data-file="products/templates/products/product_list.html">
+&lt;h1&gt;All products&lt;/h1&gt;
+
+&lt;ul&gt;
+  {% for product in products %}
+    &lt;li&gt;
+      &lt;a href="{{ product.get_absolute_url }}"&gt;{{ product.name }}&lt;/a&gt;
+      ${{ product.price }}
+    &lt;/li&gt;
+  {% empty %}
+    &lt;li&gt;No products yet.&lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre>
+
+  <h3>The new things</h3>
+  <ul class="ticks small">
+    <li><code>{% for product in products %}</code> repeats the block once per product. <code>products</code> came from the view's context.</li>
+    <li><code>{% empty %}</code> shows if the list has nothing in it.</li>
+    <li><code>{{ product.get_absolute_url }}</code> calls the method we wrote in the model. It builds <code>/products/red-running-shoes/</code> for us.</li>
+    <li>Alternative: <code>{% url 'product_detail' product.slug %}</code> does the same thing by looking up the URL's <code>name</code>.</li>
+  </ul>
+
+  <div class="widget">
+    <div class="wtitle">🎮 Flip products on and off in the "database"</div>
+    <div class="checks" id="w11-checks"></div>
+    <div class="render" id="w11-out"></div>
+    <small class="muted">Tick ⌚ Smart Watch: instantly it has a page, a link and a URL. No code changes.</small>
+  </div>
+
+  <div class="callout good"><b>Why use <code>{% url %}</code> or <code>get_absolute_url</code> instead of typing links by hand?</b> If you ever change the URL pattern (say <code>/shop/</code> instead of <code>/products/</code>), every link updates itself.</div>
+
+  <div class="qcheck" data-answer="c" data-why="Yes. The loop runs once per product in the list from the view.">
+    <h4>🧩 Quick check</h4>
+    <p>What does <code>{% for product in products %}</code> do?</p>
+    <button data-k="a">Deletes products</button>
+    <button data-k="b">Runs the view again</button>
+    <button data-k="c">Repeats the block once for each product</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 12 GOTCHAS ============ -->
+<section class="lesson" hidden data-title="Gotchas & errors" data-emoji="🪤" data-min="7">
+  <h1>Gotchas and how to fix common errors</h1>
+  <p class="lead">Everyone hits these. Now you'll recognise them. 🧯</p>
+
+  <h3>1. Slug or ID in the URL?</h3>
+  <div class="compare">
+    <div class="side"><h4>ID</h4><code>/products/7/</code><p>Simple, but meaningless to humans and search engines.</p></div>
+    <div class="side good"><h4>Slug ✅</h4><code>/products/red-running-shoes/</code><p>Readable, shareable, better for SEO. Keep it <b>unique</b>.</p></div>
+  </div>
+
+  <h3>2. Security: Django escapes things for you</h3>
+  <p>If a product name contains HTML like <code>&lt;b&gt;</code> or a sneaky <code>&lt;script&gt;</code>, Django shows it as plain text by default. That protects you from XSS attacks. Try it:</p>
+  <div class="widget">
+    <div class="wtitle">🎮 Escaping demo</div>
+    <input class="input mono" id="w12-in" value="<b onmouseover=&quot;alert(1)&quot;>Cool</b> Hat" spellcheck="false">
+    <div class="two">
+      <div class="panel"><h4><code>{{ name }}</code> (safe, default)</h4><div class="render" id="w12-safe"></div></div>
+      <div class="panel"><h4><code>{{ name|safe }}</code> (dangerous)</h4><div class="render" id="w12-unsafe"></div><small class="muted">We stripped the nasty bit here. A real page wouldn't.</small></div>
+    </div>
+    <small class="muted"><b>Rule:</b> never use <code>|safe</code> on text that users can type.</small>
+  </div>
+
+  <h3>3. Error decoder</h3>
+  <details class="err"><summary><code>TemplateDoesNotExist</code></summary>
+    <p><b>Meaning:</b> Django can't find your .html file.</p>
+    <p><b>Fix:</b> check the path <code>products/templates/products/product_detail.html</code> exactly, and that <code>"products"</code> is in <code>INSTALLED_APPS</code>.</p></details>
+  <details class="err"><summary><code>Page not found (404)</code> on a URL that should work</summary>
+    <p><b>Meaning:</b> no pattern matched, or the slug isn't in the database.</p>
+    <p><b>Fix:</b> check <code>include("products.urls")</code>, the trailing <code>/</code>, and that the product's slug is spelled exactly the same.</p></details>
+  <details class="err"><summary><code>NoReverseMatch</code></summary>
+    <p><b>Meaning:</b> <code>{% url 'name' %}</code> couldn't build a link. The name is wrong, or an argument is missing.</p>
+    <p><b>Fix:</b> make sure <code>name="product_detail"</code> exists in urls.py and pass the slug: <code>{% url 'product_detail' product.slug %}</code>.</p></details>
+  <details class="err"><summary><code>Product matching query does not exist</code></summary>
+    <p><b>Meaning:</b> you used <code>.get()</code> and nothing matched.</p>
+    <p><b>Fix:</b> use <code>get_object_or_404</code>.</p></details>
+  <details class="err"><summary><code>IntegrityError: UNIQUE constraint failed: products_product.slug</code></summary>
+    <p><b>Meaning:</b> you tried to save a second product with an existing slug.</p>
+    <p><b>Fix:</b> give it a different slug (e.g. <code>red-hat-2</code>).</p></details>
+  <details class="err"><summary><code>no such table: products_product</code></summary>
+    <p><b>Meaning:</b> you forgot to create the table.</p>
+    <p><b>Fix:</b> run <code>python manage.py makemigrations</code> then <code>python manage.py migrate</code>.</p></details>
+
+  <h3>4. The trailing slash</h3>
+  <p>Our patterns end with <code>/</code>. If someone types <code>/products/coffee-mug</code> (no slash), Django automatically redirects to the slash version. That's the <code>APPEND_SLASH</code> setting, on by default.</p>
+
+  <div class="qcheck" data-answer="a" data-why="Yes. A UNIQUE error means a slug already exists. Pick a different one.">
+    <h4>🧩 Quick check</h4>
+    <p>You see <code>UNIQUE constraint failed: …slug</code>. What happened?</p>
+    <button data-k="a">You saved two products with the same slug</button>
+    <button data-k="b">Your template is missing</button>
+    <button data-k="c">Python is not installed</button>
+    <p class="qfb"></p>
+  </div>
+</section>
+
+<!-- ============ 13 QUIZ ============ -->
+<section class="lesson" hidden data-title="Final quiz" data-emoji="🏆" data-min="5">
+  <h1>Final quiz 🏆</h1>
+  <p class="lead">Eight questions. Pick an answer for instant feedback.</p>
+  <div class="widget" id="quiz"></div>
+</section>
+
+<!-- ============ 14 CHEAT SHEET ============ -->
+<section class="lesson" hidden data-title="Cheat sheet" data-emoji="📌" data-min="3">
+  <h1>Cheat sheet: you did it! 🎉</h1>
+  <p class="lead">Everything in one place. Copy what you need.</p>
+
+  <div class="callout good"><b>The flow:</b> URL <code>/products/red-running-shoes/</code> → <code>urls.py</code> captures <code>slug</code> → <code>views.py</code> loads the product → template fills the blanks → page returned.</div>
+
+  <div class="tabset">
+    <div class="tab-bar">
+      <button class="tab-btn" type="button">models.py</button>
+      <button class="tab-btn" type="button">urls.py (×2)</button>
+      <button class="tab-btn" type="button">views.py</button>
+      <button class="tab-btn" type="button">detail.html</button>
+      <button class="tab-btn" type="button">list.html</button>
+    </div>
+    <div class="tab-panel"><pre class="code" data-lang="python" data-file="products/models.py">
+from django.db import models
+from django.urls import reverse
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    description = models.TextField(blank=True)
+    in_stock = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("product_detail", args=[self.slug])
+</pre></div>
+    <div class="tab-panel"><pre class="code" data-lang="python" data-file="products/urls.py  +  shop/urls.py">
+# products/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.product_list, name="product_list"),
+    path("&lt;slug:slug&gt;/", views.product_detail, name="product_detail"),
+]
+
+# shop/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("products/", include("products.urls")),
+]
+</pre></div>
+    <div class="tab-panel"><pre class="code" data-lang="python" data-file="products/views.py">
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, "products/product_list.html", {"products": products})
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    return render(request, "products/product_detail.html", {"product": product})
+</pre></div>
+    <div class="tab-panel"><pre class="code" data-lang="html" data-file="products/templates/products/product_detail.html">
+&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;{{ product.name }} | My Shop&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;{{ product.name }}&lt;/h1&gt;
+  &lt;p&gt;${{ product.price }}&lt;/p&gt;
+  &lt;p&gt;{{ product.description }}&lt;/p&gt;
+
+  {% if product.in_stock %}
+    &lt;button&gt;Add to cart&lt;/button&gt;
+  {% else %}
+    &lt;p&gt;Sorry, sold out.&lt;/p&gt;
+  {% endif %}
+
+  &lt;a href="{% url 'product_list' %}"&gt;← All products&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+    <div class="tab-panel"><pre class="code" data-lang="html" data-file="products/templates/products/product_list.html">
+&lt;h1&gt;All products&lt;/h1&gt;
+
+&lt;ul&gt;
+  {% for product in products %}
+    &lt;li&gt;
+      &lt;a href="{{ product.get_absolute_url }}"&gt;{{ product.name }}&lt;/a&gt;
+      ${{ product.price }}
+    &lt;/li&gt;
+  {% empty %}
+    &lt;li&gt;No products yet.&lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;
+</pre></div>
+  </div>
+
+  <h3>Commands you'll reuse</h3>
+  <pre class="code" data-lang="bash" data-file="terminal">
+python manage.py makemigrations   # after changing models.py
+python manage.py migrate          # apply changes to the database
+python manage.py createsuperuser  # make an admin login
+python manage.py runserver        # start the dev server
+</pre>
+
+  <h3>Where to go next</h3>
+  <div class="grid2">
+    <div class="card"><h3>🖼️ Product images</h3><p>Add an <code>ImageField</code> and show photos in the template.</p></div>
+    <div class="card"><h3>🗂️ Categories</h3><p>A <code>Category</code> model, then URLs like <code>/category/shoes/</code>.</p></div>
+    <div class="card"><h3>📄 Pagination</h3><p>Show 12 products per page with Django's <code>Paginator</code>.</p></div>
+    <div class="card"><h3>🔍 Search</h3><p>Filter with <code>Product.objects.filter(name__icontains=q)</code>.</p></div>
+  </div>
+
+  <div class="slugsy"><span class="face">🐌</span><div class="bubble">You now understand the core of almost every website: <b>a template, some data, and a URL that picks the data</b>. Press <b>Finish</b> below to celebrate!</div></div>
+</section>
+
+    </div>
+
+    <footer class="pager">
+      <button class="btn ghost" id="prev" type="button">← Back</button>
+      <button class="btn" id="next" type="button">Done, next →</button>
+    </footer>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
